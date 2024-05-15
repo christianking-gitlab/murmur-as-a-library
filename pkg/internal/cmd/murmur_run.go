@@ -3,7 +3,7 @@ package cmd
 import (
 	"os"
 
-	"github.com/busser/murmur/internal/murmur"
+	"github.com/busser/murmur/pkg/internal/murmur"
 	"github.com/spf13/cobra"
 )
 

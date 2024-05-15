@@ -5,7 +5,7 @@ import (
 	"os"
 	"testing"
 
-	"github.com/busser/murmur/internal/environ"
+	"github.com/busser/murmur/pkg/internal/environ"
 )
 
 func TestRun(t *testing.T) {

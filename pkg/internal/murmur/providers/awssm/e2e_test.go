@@ -1,21 +1,21 @@
 //go:build e2e
 
-package azkv_test
+package awssm_test
 
 import (
 	"context"
 	"testing"
 	"time"
 
-	"github.com/busser/murmur/internal/murmur/providers/azkv"
+	"github.com/busser/murmur/pkg/internal/murmur/providers/awssm"
 )
 
 func TestClient(t *testing.T) {
 
 	// The secrets this test reads were created with Terraform. The code is in
-	// the terraform/layers/azure-keyvault directory of this repository.
+	// the terraform/layers/aws-secrets-manager directory of this repository.
 
-	client, err := azkv.New()
+	client, err := awssm.New()
 	if err != nil {
 		t.Fatalf("New() returned an error: %v", err)
 	}
@@ -25,53 +25,76 @@ func TestClient(t *testing.T) {
 		wantVal string
 		wantErr bool
 	}{
-		// References to the "alpha" vault.
+		// References by name.
 		{
-			ref:     "murmur-alpha.vault.azure.net/secret-sauce",
+			ref:     "secret-sauce",
 			wantVal: "szechuan",
 			wantErr: false,
 		},
 		{
-			ref:     "murmur-alpha.vault.azure.net/secret-sauce#788ffd5cd2224f67b98e12f6fc0cd720",
+			ref:     "secret-sauce#AWSCURRENT",
 			wantVal: "szechuan",
 			wantErr: false,
 		},
 		{
-			ref:     "murmur-alpha.vault.azure.net/secret-sauce#02fc2105c6b34f8385a2ee8531e4900f",
+			ref:     "secret-sauce#9AF93B18-59D6-4C19-92AC-3F69A115D404",
+			wantVal: "szechuan",
+			wantErr: false,
+		},
+		{
+			ref:     "secret-sauce#v2",
+			wantVal: "szechuan",
+			wantErr: false,
+		},
+		{
+			ref:     "secret-sauce#97DD35A4-DD9B-4E4B-B371-9F2CA4673A41",
 			wantVal: "ketchup",
 			wantErr: false,
 		},
 		{
-			ref:     "murmur-alpha.vault.azure.net/does-not-exist",
-			wantVal: "",
-			wantErr: true,
-		},
-
-		// References to the "bravo" vault.
-		{
-			ref:     "murmur-bravo.vault.azure.net/secret-sauce",
-			wantVal: "szechuan",
-			wantErr: false,
-		},
-		{
-			ref:     "murmur-bravo.vault.azure.net/secret-sauce#48b0d307869b4cf9a0141a062ecdc648",
-			wantVal: "szechuan",
-			wantErr: false,
-		},
-		{
-			ref:     "murmur-bravo.vault.azure.net/secret-sauce#e34b3d09f61f4ed1a1812b88834bcb3e",
+			ref:     "secret-sauce#v1",
 			wantVal: "ketchup",
 			wantErr: false,
 		},
 		{
-			ref:     "murmur-bravo.vault.azure.net/does-not-exist",
+			ref:     "does-not-exist",
 			wantVal: "",
 			wantErr: true,
 		},
 
-		// Other references.
+		// References by ARN.
 		{
-			ref:     "invalid-ref",
+			ref:     "arn:aws:secretsmanager:eu-west-3:531255069405:secret:secret-sauce-sWcbiZ",
+			wantVal: "szechuan",
+			wantErr: false,
+		},
+		{
+			ref:     "arn:aws:secretsmanager:eu-west-3:531255069405:secret:secret-sauce-sWcbiZ#AWSCURRENT",
+			wantVal: "szechuan",
+			wantErr: false,
+		},
+		{
+			ref:     "arn:aws:secretsmanager:eu-west-3:531255069405:secret:secret-sauce-sWcbiZ#9AF93B18-59D6-4C19-92AC-3F69A115D404",
+			wantVal: "szechuan",
+			wantErr: false,
+		},
+		{
+			ref:     "arn:aws:secretsmanager:eu-west-3:531255069405:secret:secret-sauce-sWcbiZ#v2",
+			wantVal: "szechuan",
+			wantErr: false,
+		},
+		{
+			ref:     "arn:aws:secretsmanager:eu-west-3:531255069405:secret:secret-sauce-sWcbiZ#97DD35A4-DD9B-4E4B-B371-9F2CA4673A41",
+			wantVal: "ketchup",
+			wantErr: false,
+		},
+		{
+			ref:     "arn:aws:secretsmanager:eu-west-3:531255069405:secret:secret-sauce-sWcbiZ#v1",
+			wantVal: "ketchup",
+			wantErr: false,
+		},
+		{
+			ref:     "arn:aws:secretsmanager:eu-west-3:531255069405:secret:does-not-exist",
 			wantVal: "",
 			wantErr: true,
 		},

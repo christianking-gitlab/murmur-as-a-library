@@ -1,9 +1,9 @@
 package main
 
 import (
-	"github.com/busser/murmur/internal/cmd"
+	"github.com/busser/murmur/pkg"
 )
 
 func main() {
-	cmd.Execute()
+	pkg.PublicMain()
 }

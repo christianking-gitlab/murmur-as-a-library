@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/busser/murmur/internal/murmur/providers/scwsm"
+	"github.com/busser/murmur/pkg/internal/murmur/providers/scwsm"
 )
 
 func Example() {
